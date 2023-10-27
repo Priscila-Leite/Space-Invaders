@@ -77,6 +77,9 @@ def Play(modo=0):
 
     # Voltar ao menu
     if pressed.key_pressed('ESC'):
+        spaceship.set_position(screen_width/2 - spaceship.width/2, screen_height-spaceship.height*3)
+        while len(shoots) > 1:
+            shoots.pop()
         return 'None'
     
     # Atualizar tela
