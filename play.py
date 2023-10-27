@@ -15,8 +15,8 @@ fundo = GameImage('Imagens/Play/background.png')
 fundo.set_position(0, 0)
 
 # Inicialização da nave
-ship = Sprite('Imagens/Play/ship.png')
-ship.set_position(screen_width/2 - ship.width/2, screen_height-ship.height*3)
+spaceship = Sprite('Imagens/Play/spaceship.png')
+spaceship.set_position(screen_width/2 - spaceship.width/2, screen_height-spaceship.height*3)
 
 # Definição da velocidade da nave e dos tiros
 velocity_ship = 180
@@ -33,8 +33,8 @@ def update_screen():
     fundo.draw()
 
     # atualiza a posição da nave e a desenha
-    ship.set_position(ship.x, ship.y)
-    ship.draw()
+    spaceship.set_position(spaceship.x, spaceship.y)
+    spaceship.draw()
 
 
     # Desenha cada tiro da lista movendo para cima
@@ -51,31 +51,37 @@ def update_screen():
 # Função que adiciona um tiro na lista, com o x sendo o da nave
 def shoot(x):
     shot = Sprite('Imagens/Play/pixel-32x35.png')
-    shot.set_position(x, ship.y-ship.height)
+    shot.set_position(x, spaceship.y-spaceship.height)
     shoots.append(shot)
 
 # 
 def Play(modo=0):
     pressed = Window.get_keyboard()
 
-    if ship.x <= ship.width*3:
-        ship.x = ship.width*3
-    if ship.x >= screen_width-ship.width*3:
-        ship.x = screen_width-ship.width*3
+    # Nave não ultrapassa tela do jogo
+    if spaceship.x <= spaceship.width*3:
+        spaceship.x = spaceship.width*3
+    if spaceship.x >= screen_width-spaceship.width*3:
+        spaceship.x = screen_width-spaceship.width*3
 
-    if pressed.key_pressed('RIGHT') and ship.x < screen_width-ship.width*3:
-        ship.x += velocity_ship * screen.delta_time()
-    if pressed.key_pressed('LEFT') and ship.x > ship.width*3:
-        ship.x -= velocity_ship * screen.delta_time()
+    # Movimentos da nave
+    if pressed.key_pressed('RIGHT') and spaceship.x < screen_width-spaceship.width*3:
+        spaceship.x += velocity_ship * screen.delta_time()
+    if pressed.key_pressed('LEFT') and spaceship.x > spaceship.width*3:
+        spaceship.x -= velocity_ship * screen.delta_time()
     
+    # Execução de tiro se não houver tiros no terceiro quarto da altura da tela
     if pressed.key_pressed('SPACE') and (shoots[0] == None or shoots[-1].y <= 3*screen_height/4):
-        x = ship.x
+        x = spaceship.x
         shoot(x)
 
+    # Voltar ao menu
     if pressed.key_pressed('ESC'):
         return 'None'
     
+    # Atualizar tela
     update_screen()
 
+    # Continuar jogando
     return Play
 
