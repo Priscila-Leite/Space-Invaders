@@ -22,10 +22,8 @@ spaceship.set_position(screen_width/2 - spaceship.width/2, screen_height-spacesh
 velocity_ship = 180
 velocity_shot = 180
 
-# Inicializa lista de tiros na tela com 1 tiro fora da tela
-shot1 = Sprite('Imagens/Play/pixel-32x35.png')
-shot1.set_position(-1000, -1000)
-shoots = [shot1]
+# Inicializa lista de tiros na tela vazia
+shoots = []
 
 # Função de atualização da janela
 def update_screen():
@@ -40,7 +38,7 @@ def update_screen():
     # Desenha cada tiro da lista movendo para cima
     for shot in shoots:
         shot.y -= velocity_shot * screen.delta_time()
-        if shot.y <= 0 and len(shoots) > 1:
+        if shot.y <= -2*shot.height and len(shoots) > 0:
             shoots.pop(0)
             continue
         shot.draw()
@@ -55,7 +53,8 @@ def shoot(x):
     shoots.append(shot)
 
 # 
-def Play(modo=0):
+def Play(modo):
+
     pressed = Window.get_keyboard()
 
     # Nave não ultrapassa tela do jogo
@@ -71,7 +70,7 @@ def Play(modo=0):
         spaceship.x -= velocity_ship * screen.delta_time()
     
     # Execução de tiro se não houver tiros no terceiro quarto da altura da tela
-    if pressed.key_pressed('SPACE') and (shoots[0] == None or shoots[-1].y <= 3*screen_height/4):
+    if (pressed.key_pressed('SPACE') and len(shoots)==0) or (pressed.key_pressed('SPACE') and shoots[-1].y <= modo):
         x = spaceship.x
         shoot(x)
 

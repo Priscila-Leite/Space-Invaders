@@ -14,9 +14,10 @@ screen.set_title('Space Invaders')
 # Inicialização da tela inicial do jogo sendo o menu principal
 tipo = menu
 
+# Inicialização do modo de jogo como fácil
+modo = 3 * screen_height/5
 while True:
-    # Inicialização do modo de jogo como fácil
-    modo = 0
+    
     if tipo == menu or tipo == 'None':
         tipo = menu()
 
@@ -30,6 +31,11 @@ while True:
         # no modo correspondente
         if type(tipo) == list:
             modo = tipo[1]
+            if tipo[1] != 0:
+                if tipo[1] == 1:
+                    modo = 2 * screen_height/5
+                else:
+                    modo = 1 * screen_height/5
             tipo = Play(modo)
 
     if tipo == Ranking:
