@@ -97,7 +97,7 @@ def update_screen():
         alien_shot = [random.randint(0, linhas-1), random.randint(0, colunas-1)]
         temp_alien = 0
     l = 0
-    print(temp_alien, 500 * screen.delta_time())
+    
     for linha in aliens:
         c = 0
         for alien in linha:
@@ -169,6 +169,7 @@ def shoot(x, y, direcao):
 def Play(modo):
     global fim
     global aliens
+    global temp_ship
 
     pressed = Window.get_keyboard()
 
@@ -183,11 +184,13 @@ def Play(modo):
         spaceship.x += velocity_ship * screen.delta_time()
     if pressed.key_pressed('LEFT') and spaceship.x > spaceship.width*3:
         spaceship.x -= velocity_ship * screen.delta_time()
-    
+    temp_ship += 1
     # Execução de tiro se não houver tiros no terceiro quarto da altura da tela
-    if (pressed.key_pressed('SPACE') and len(shoots)==0) or (pressed.key_pressed('SPACE') and shoots[-1][0].y <= modo):
+    if (pressed.key_pressed('SPACE') and len(shoots)==0) or (pressed.key_pressed('SPACE') and temp_ship >= 500 * screen.delta_time()):
         x = spaceship.x
         shoot(x, spaceship.y-spaceship.height, -1)
+        
+        temp_ship = 0
 
     # Voltar ao menu
     if pressed.key_pressed('ESC') or fim:

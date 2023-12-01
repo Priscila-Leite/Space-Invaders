@@ -31,7 +31,7 @@ while True:
         # no modo correspondente
         if type(tipo) == list:
             modo = tipo[1]
-            if tipo[1] != 0:
+            if tipo[1] != 0: 
                 if tipo[1] == 1:
                     modo = 2 * screen_height/5
                 else:
