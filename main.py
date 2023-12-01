@@ -25,7 +25,7 @@ while True:
         tipo = Play(modo)
 
     if tipo == Difficulty:
-        tipo = Difficulty()
+        tipo = Difficulty() 
 
         # Se a variável da tela do jogo for uma lista, inicie o jogo
         # no modo correspondente
