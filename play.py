@@ -15,6 +15,7 @@ screen.set_title('Space Invaders')
 fundo = GameImage('Imagens/Play/background.png')
 fundo.set_position(0, 0)
 
+vidas = 3
 
 score = 0
 
@@ -55,14 +56,24 @@ shoots = []
 temp_alien = temp_ship = 500 * screen.delta_time()
 alien_shot = [random.randint(0, linhas-1), random.randint(0, colunas-1)]
 
+pisca = -1
 # Função de atualização da janela
 def update_screen():
     # Desenha o fundo
     fundo.draw()
+    global pisca
+    global vidas
 
     # atualiza a posição da nave e a desenha
     spaceship.set_position(spaceship.x, spaceship.y)
     spaceship.draw()
+
+    if pisca % 2 == 0 and pisca >= 0:
+        spaceship.hide()
+        if pisca == 0:
+            pisca = -1
+    else:
+        spaceship.unhide()
 
     colisao = False
     perdeu = False
@@ -134,6 +145,7 @@ def update_screen():
 
             if alien_shot == [l, c] and temp_alien == 0 and alien[3]:
                 shoot(alien[1], alien[2]+alien[0].width/2, 1)
+                pisca -= 1
             c += 1
         l += 1
 
@@ -151,7 +163,11 @@ def update_screen():
             shot[0].draw()
         if shot[0].collided(spaceship):
             shoots.remove(shot)
-            return True
+            if vidas == 0:
+                return True
+            else:
+                vidas -= 1
+                pisca = 10
 
     
     # Atualiza a tela
