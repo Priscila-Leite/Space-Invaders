@@ -2,6 +2,7 @@ from PPlay.window import *
 from PPlay.mouse import *
 from menu import *
 from play import *
+from ranking import *
 
 # Medidas da janela
 screen_width = 1280
@@ -38,8 +39,8 @@ while True:
                     modo = 1 * screen_height/5
             tipo = Play(modo)
 
-    if tipo == Ranking:
-        tipo = menu
+    if tipo == Ranking or tipo == 'Ranking':
+        tipo = Ranking()
 
     if tipo == Exit: # Fecha a janela
         break

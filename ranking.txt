@@ -1,0 +1,6 @@
+Pri,250
+Priscila,1000
+Prisci,10
+Pris,550
+P,100
+Pr,0
