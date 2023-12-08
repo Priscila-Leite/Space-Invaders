@@ -94,8 +94,8 @@ def update_screen():
     global aliens
     global temp_alien
     global alien_shot
-    global linhas
-    global colunas
+    global linhas_1
+    global colunas_1
     y = 0
     score = 0
     temp_alien += 1
@@ -117,7 +117,7 @@ def update_screen():
                     y += 1
                     break
     if temp_alien >= 500 * screen.delta_time():
-        alien_shot = [random.randint(0, linhas-1), random.randint(0, colunas-1)]
+        alien_shot = [random.randint(0, linhas_1-1), random.randint(0, colunas_1-1)]
         temp_alien = 0
     l = 0
     
@@ -180,18 +180,20 @@ def update_screen():
                 vidas -= 1
                 pisca = 100
     
+    shot_shot_collision()
+    
     global score_anterior
     global score_total
 
-    if score_anterior + score >= pontos * linhas * colunas:
+    if score_anterior + score >= pontos * linhas_1 * colunas_1:
         score_total = score_anterior + score
-        if linhas < max_linhas:
-            linhas += 1
-        if colunas < max_colunas:
-            colunas += 1
+        if linhas_1 < max_linhas:
+            linhas_1 += 1
+        if colunas_1 < max_colunas:
+            colunas_1 += 1
         temp_alien -= 10 * screen.delta_time()
 
-        restart(spaceship, aliens, shoots, linhas, colunas)
+        restart(aliens, shoots, alien_shot)
         score_anterior = score_total
 
         pisca = 100
@@ -202,25 +204,44 @@ def update_screen():
     screen.draw_text(str(score_anterior+score), screen_width-200, 1, 24, bold=True, color=(255, 255, 255))
     screen.update()
     
-def restart(spaceship, aliens, shoots, linhas, colunas):
+def restart_total(spaceship, aliens, shoots, linhas_1, colunas_1):
     global score_anterior
     global temp_ship
     global temp_alien
-
-
-    aliens.clear()
-    
-    for i in range(len(shoots)-1):
-        shoots.pop()
-
-    score_anterior = 0
-
-
+    global vidas, nome, pontos, velocity_ship, velocity_shot, fim
+    global alien_shot, pisca
+    vidas = 3
+    nome = ''
+    score_anterior = score_total = 0
+    pontos = 50
     spaceship.set_position(screen_width/2 - spaceship.width/2, screen_height-spaceship.height*3)
-
-    temp_alien = temp_ship = 500 * screen.delta_time()
-    
+    velocity_ship = 300
+    velocity_shot = 240
+    fim = False
+    linhas_1, colunas_1 = linhas, colunas
+    aliens.clear()
     aliens_create(aliens, linhas, colunas)
+    shoots.clear()
+    temp_alien = 500 * screen.delta_time()
+    temp_ship = 400 * screen.delta_time()
+    alien_shot = [random.randint(0, linhas-1), random.randint(0, colunas-1)]
+    pisca = -1
+
+def restart(aliens, shoots, alien_shot):
+    aliens.clear()
+    aliens_create(aliens, linhas_1, colunas_1)
+    shoots.clear()
+    alien_shot = [random.randint(0, linhas_1-1), random.randint(0, colunas_1-1)]
+
+def shot_shot_collision():
+    for s1 in shoots:
+        if s1[2] == -1:
+            for s2 in shoots:
+                if s2[2] == 1:
+                    if s1[0].collided(s2[0]):
+                        shoots.remove(s1)
+                        shoots.remove(s2)
+                        break
 
 # Função que adiciona um tiro na lista, com o x sendo o da nave
 def shoot(x, y, direcao):
@@ -257,14 +278,16 @@ def Play(modo):
 
     # Voltar ao menu
     if pressed.key_pressed('ESC'):
-        restart(spaceship, aliens, shoots, linhas_1, colunas_1)
+        restart_total(spaceship, aliens, shoots, linhas_1, colunas_1)
         return 'None'
     global nome
     if fim:
         n = open('ranking.txt', 'a')
+        print('O nome deve conter, no máximo, 16 caracteres')
         nome = input('Nome: ')
         n.write(nome + ',' + str(score_total)+ '\n')
         n.close()
+        restart_total(spaceship, aliens, shoots, linhas, colunas)
         return Ranking()
     
     # Atualizar tela

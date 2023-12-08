@@ -38,7 +38,8 @@ def Ranking():
     if len(lista) == 0:
         for linha in ranking:
             linha = linha.strip().split(',')
-            lista.append([linha[0], int(linha[1])])
+            if linha != ['']:
+                lista.append([linha[0], int(linha[1])])
         ranking.close()
     if len(lista_sort) == 0:
         lista_sort = [None]
@@ -60,6 +61,9 @@ def Ranking():
     for nome in range(len(lista_sort)):
         if nome >= 5:
             break
+
+        if len(lista_sort[nome][0]) > 16:
+            lista_sort[nome][0] = lista_sort[nome][0][:16]
         screen.draw_text(lista_sort[nome][0], x_rank, y_rank + 80 * nome, tamanho, (0, 0, 0), 'Arial', True)
         screen.draw_text(str(lista_sort[nome][1]), 820, y_rank + 80 * nome, tamanho, (0, 0, 0), 'Arial', True)
 

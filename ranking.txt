@@ -3,4 +3,7 @@ Priscila,1000
 Prisci,10
 Pris,550
 P,100
+
 Pr,0
+nnn,400
+222,0
