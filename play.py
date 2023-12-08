@@ -5,7 +5,7 @@ import random
 from ranking import *
 
 # Medidas da janela
-screen_width = 1280
+screen_width = 1280 
 screen_height = 720
 
 # Inicialização da janela
@@ -62,19 +62,31 @@ aliens_create(aliens, linhas_1, colunas_1)
 # Inicializa lista de tiros na tela vazia
 shoots = []
 temp_alien = 500 * screen.delta_time()
-temp_ship = 400 * screen.delta_time()
+temp_ship = 500 * screen.delta_time()
 alien_shot = [random.randint(0, linhas-1), random.randint(0, colunas-1)]
 
+especial = 0
+
 pisca = -1
+
+parado = 0
+pos_parado = [spaceship.x, spaceship.y]
+
 # Função de atualização da janela
 def update_screen():
     # Desenha o fundo
     fundo.draw()
     global pisca
     global vidas
+    global parado
+    global pos_parado
 
     # atualiza a posição da nave e a desenha
-    spaceship.set_position(spaceship.x, spaceship.y)
+    if parado >= 0:
+        spaceship.set_position(pos_parado[0], pos_parado[1])
+        parado -= 1
+    else:
+        spaceship.set_position(spaceship.x, spaceship.y)
     spaceship.draw()
 
     if pisca % 2 != 0 and pisca >= 0:
@@ -96,6 +108,7 @@ def update_screen():
     global alien_shot
     global linhas_1
     global colunas_1
+    global especial
     y = 0
     score = 0
     temp_alien += 1
@@ -116,7 +129,7 @@ def update_screen():
                     colisao = True
                     y += 1
                     break
-    if temp_alien >= 500 * screen.delta_time():
+    if temp_alien >= 1500 * screen.delta_time():
         alien_shot = [random.randint(0, linhas_1-1), random.randint(0, colunas_1-1)]
         temp_alien = 0
     l = 0
@@ -155,8 +168,14 @@ def update_screen():
             if alien[2]+alien[0].height > spaceship.y:
                 return True
 
+
             if alien_shot == [l, c] and temp_alien == 0 and alien[3]:
-                shoot(alien[1], alien[2]+alien[0].width/2, 1)
+                especial += 1
+                if especial >= 3:
+                    especial_shoot(alien[1], alien[2]+alien[0].width/2)
+                    especial = 0
+                else:
+                    shoot(alien[1], alien[2]+alien[0].width/2, 1)
             c += 1
         l += 1
 
@@ -173,6 +192,11 @@ def update_screen():
         if not shot[1]:
             shot[0].draw()
         if shot[0].collided(spaceship) and pisca < 0:
+            if shot[3]:
+                parado = 100
+                pos_parado = [spaceship.x, spaceship.y]
+                shoots.remove(shot)
+                continue
             shoots.remove(shot)
             if vidas == 0:
                 return True
@@ -202,6 +226,8 @@ def update_screen():
     
     # Atualiza a tela
     screen.draw_text(str(score_anterior+score), screen_width-200, 1, 24, bold=True, color=(255, 255, 255))
+    screen.draw_text(str(vidas), 72, 1, 24, bold=True, color=(255, 255, 255))
+
     screen.update()
     
 def restart_total(spaceship, aliens, shoots, linhas_1, colunas_1):
@@ -209,7 +235,7 @@ def restart_total(spaceship, aliens, shoots, linhas_1, colunas_1):
     global temp_ship
     global temp_alien
     global vidas, nome, pontos, velocity_ship, velocity_shot, fim
-    global alien_shot, pisca
+    global alien_shot, pisca, especial
     vidas = 3
     nome = ''
     score_anterior = score_total = 0
@@ -223,9 +249,10 @@ def restart_total(spaceship, aliens, shoots, linhas_1, colunas_1):
     aliens_create(aliens, linhas, colunas)
     shoots.clear()
     temp_alien = 500 * screen.delta_time()
-    temp_ship = 400 * screen.delta_time()
+    temp_ship = 500 * screen.delta_time()
     alien_shot = [random.randint(0, linhas-1), random.randint(0, colunas-1)]
     pisca = -1
+    especial = 0
 
 def restart(aliens, shoots, alien_shot):
     aliens.clear()
@@ -245,9 +272,14 @@ def shot_shot_collision():
 
 # Função que adiciona um tiro na lista, com o x sendo o da nave
 def shoot(x, y, direcao):
-    shot = Sprite('Imagens/Play/pixel-32x35.png')
+    shot = Sprite('Imagens/Play/shot.png')
     shot.set_position(x, y)
-    shoots.append([shot, False, direcao])
+    shoots.append([shot, False, direcao, False])
+
+def especial_shoot(x, y):
+    shot = Sprite('Imagens/Play/shot_2.png')
+    shot.set_position(x, y)
+    shoots.append([shot, False, 1, True])
 
 
 def Play(modo):
@@ -269,12 +301,13 @@ def Play(modo):
     if pressed.key_pressed('LEFT') and spaceship.x > spaceship.width*3:
         spaceship.x -= velocity_ship * screen.delta_time()
     temp_ship += 1
-    # Execução de tiro se não houver tiros no terceiro quarto da altura da tela
-    if (pressed.key_pressed('SPACE') and len(shoots)==0) or (pressed.key_pressed('SPACE') and temp_ship >= 500 * screen.delta_time()):
-        x = spaceship.x
-        shoot(x, spaceship.y-spaceship.height, -1)
-        
-        temp_ship = 0
+
+    if (pressed.key_pressed('SPACE') and len(shoots)==0) or (pressed.key_pressed('SPACE') and temp_ship >= 700 * screen.delta_time()):
+        if parado < 0:
+            x = spaceship.x
+            shoot(x, spaceship.y-spaceship.height, -1)
+            
+            temp_ship = 0
 
     # Voltar ao menu
     if pressed.key_pressed('ESC'):
